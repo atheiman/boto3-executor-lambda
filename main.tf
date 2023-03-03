@@ -28,6 +28,7 @@ data "aws_region" "current" {}
 
 resource "aws_s3_bucket" "boto3_responses" {
   bucket_prefix = local.project
+  force_destroy = true
 }
 
 module "lambda_function" {
@@ -98,7 +99,7 @@ output "cli_invoke_1" {
         },
         boto3_paginator_response_items_key = "InstanceTypes"
       }),
-      "' /dev/stdout\n",
+      "' ./lambda-response.json\n",
     ]
   )
 }

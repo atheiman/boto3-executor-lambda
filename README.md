@@ -20,7 +20,7 @@ This Lambda function can be useful from other tools that can not run AWS API cal
       {"Name": "current-generation", "Values": ["true"]}
     ]
   },
-  // Enables paginated api call - must specify the key in the response containing items to aggregate
+  // Enables paginated API call - must specify the key in the response containing items to aggregate
   "boto3_paginator_response_items_key": "InstanceTypes"
 }
 ```
@@ -97,3 +97,34 @@ Optional. S3 bucket key / prefix to store response in. Defaults to Lambda functi
 
 Optional. Integer specifying number of spaces to use in JSON indents in saved S3 response file. [See `indent` arg in `json.dumps()`](https://docs.python.org/3.9/library/json.html#json.dumps). Defaults to Lambda function environment variable `"RESPONSE_S3_BODY_JSON_INDENT"`, which defaults to `2`. Specify `0` to save the JSON data on one line (most compact). Examples: `0`, `2`.
 
+## Terraform Quickstart
+
+To easily deploy this project, clone it and then deploy with [Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli). [The Terraform AWS provider will use your active AWS credentials](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#authentication-and-configuration). Note that [deploying the Lambda function requires Python in your `$PATH`](https://github.com/terraform-aws-modules/terraform-aws-lambda/#build).
+
+```bash
+git clone git@github.com:atheiman/boto3-executor-lambda.git
+cd boto3-executor-lambda
+
+terraform init
+terraform apply
+
+# Review the plan output and type 'yes' to apply the plan
+
+# Print an AWS CLI command you can run to invoke the Lambda function
+terraform output -raw cli_invoke_1
+
+# Review the printed command, then run it to invoke the deployed Lambda function.
+
+# The lambda response JSON includes `response_s3_uri`, which you can download to see the boto3 API response
+cat ./lambda-response.json
+
+# Download the boto3 API response
+aws s3 cp <response_s3_uri> ./boto3-response-data.json
+
+# The boto3 API response is big. Much too big to be retrieved directly in Step Functions or some other tools
+ls -lh ./boto3-response-data.json
+head ./boto3-response-data.json
+
+# Destroy created infrastructure
+terraform destroy
+```

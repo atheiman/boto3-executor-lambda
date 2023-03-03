@@ -4,51 +4,6 @@ import boto3
 import botocore
 from datetime import datetime
 
-
-# Example events
-#
-# https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2/client/describe_instance_types.html
-# {
-#   "boto3_client_name": "ec2",
-#   "boto3_method_name": "describe_instance_types",
-#   "boto3_method_kwargs": {
-#     "Filters": [
-#       {
-#         "Name": "bare-metal",
-#         "Values": ["false"]
-#       },
-#       {
-#         "Name": "current-generation",
-#         "Values": ["true"]
-#       }
-#     ]
-#   },
-#   "boto3_paginator_response_items_key": "InstanceTypes"
-# }
-#
-# https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb/paginator/Scan.html
-# {
-#   "boto3_client_name": "dynamodb",
-#   "boto3_method_name": "scan",
-#   "boto3_method_kwargs": {
-#     "TableName": "MyTable"
-#   },
-#   "boto3_paginator_response_items_key": "Items"
-# }
-#
-# https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/lambda/client/get_function.html
-# {
-#   "boto3_client_name": "lambda",
-#   "boto3_method_name": "get_function",
-#   "boto3_method_kwargs": {
-#     "FunctionName": "MyFunction"
-#   },
-#   "boto3_response_key": "Configuration",
-#   "response_s3_bucket": "my-bucket",
-#   "response_s3_key": "path/to/response.json"
-# }
-
-
 s3 = boto3.client("s3", region_name=os.environ["AWS_REGION"])
 
 
@@ -62,6 +17,7 @@ def lambda_handler(event, context):
     boto3_response_data = None
     boto3_client = boto3.client(boto3_client_name, region_name=os.environ["AWS_REGION"])
 
+    # Get items from paginated API
     if boto3_paginator_response_items_key:
         print(f"Calling paginated API {boto3_client_name}.{boto3_method_name}")
         paginator = boto3_client.get_paginator(boto3_method_name)
@@ -75,8 +31,16 @@ def lambda_handler(event, context):
                 f" items count: {len(boto3_response_data)}"
             )
 
+    # Get non-paginated API response
     else:
-        print(f"Calling API {boto3_client_name}.{boto3_method_name}")
+        if boto3_client.can_paginate(boto3_method_name):
+            result_keys = [k.parsed["value"] for k in boto3_client.get_paginator(boto3_method_name).result_keys]
+            print(
+                f"Warning - API {boto3_client_name}.{boto3_method_name} can paginate, but"
+                f" 'boto3_paginator_response_items_key' was not specified in event. Specify one of"
+                f" {result_keys} to retrieve all results from this paginated API."
+            )
+        print(f"Calling API {boto3_client_name}.{boto3_method_name} without pagination")
         boto3_response_data = getattr(boto3_client, boto3_method_name)(**boto3_method_kwargs)
         if boto3_response_key:
             boto3_response_data = boto3_response_data[boto3_response_key]

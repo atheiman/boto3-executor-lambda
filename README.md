@@ -1,4 +1,4 @@
-Deploy as a Lambda function to make AWS API calls using Boto3 for you and save the response to S3. The Lambda function response specifies where the boto3 response data was stored in S3.
+Deploy as an AWS Lambda function to make AWS API calls using Boto3 for you and save the response to S3. The Lambda function response specifies where the boto3 response data was stored in S3.
 
 This Lambda function can be useful from other tools that can not run AWS API calls or can only handle responses up to a certain size. For example, [Step Functions AWS SDK service integrations](https://docs.aws.amazon.com/step-functions/latest/dg/supported-services-awssdk.html) can only handle responses up to 256 KB.
 
@@ -40,8 +40,8 @@ Optional. Integer specifying number of spaces to use in JSON indents in saved S3
 
 ### Example Events
 
-#### [EC2 - DescribeInstanceTypes](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2/client/describe_instance_types.html)
-```json
+#### [EC2 - DescribeInstanceTypes (paginated)](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2/paginator/DescribeInstanceTypes.html)
+```javascript
 {
   "boto3_client_name": "ec2",
   "boto3_method_name": "describe_instance_types",
@@ -61,8 +61,8 @@ Optional. Integer specifying number of spaces to use in JSON indents in saved S3
 }
 ```
 
-#### [DynamoDB - Scan](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb/paginator/Scan.html)
-```json
+#### [DynamoDB - Scan (paginated)](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb/paginator/Scan.html)
+```javascript
 {
   "boto3_client_name": "dynamodb",
   "boto3_method_name": "scan",
@@ -73,17 +73,17 @@ Optional. Integer specifying number of spaces to use in JSON indents in saved S3
 }
 ```
 
-#### [Lambda - GetFunction](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/lambda/client/get_function.html)
-```json
+#### [Lambda - GetFunction (non-paginated)](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/lambda/client/get_function.html)
+```javascript
 {
-  "boto3_client_name": "lambda",
-  "boto3_method_name": "get_function",
-  "boto3_method_kwargs": {
+  "boto3_client_name": "lambda",             // Use boto3 client "lambda"
+  "boto3_method_name": "get_function",       // Execute lambda client boto3 method "get_function"
+  "boto3_method_kwargs": {                   // Specify lambda.get_function() parameters
     "FunctionName": "MyFunction"
   },
-  "boto3_response_key": "Configuration",
-  "response_s3_bucket": "my-bucket",
-  "response_s3_key": "path/to/response.json"
+  "boto3_response_key": "Configuration",     // Store only the data within the response key "Configuration"
+  "response_s3_bucket": "my-bucket",         // Response will be stored in s3 bucket "my-bucket"
+  "response_s3_key": "path/to/response.json" // Response will be stored in s3 prefix "path/to/response.json"
 }
 ```
 

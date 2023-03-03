@@ -28,12 +28,12 @@ This Lambda function can be useful from other tools that can not run AWS API cal
 ### [DynamoDB - Scan (paginated)](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb/paginator/Scan.html)
 ```javascript
 {
-  "boto3_client_name": "dynamodb",
-  "boto3_method_name": "scan",
-  "boto3_method_kwargs": {
+  "boto3_client_name": "dynamodb",              // Use boto3 client "dynamodb"
+  "boto3_method_name": "scan",                  // Execute dynamodb client boto3 method "scan"
+  "boto3_method_kwargs": {                      // Specify dynamodb.scan() parameters
     "TableName": "MyTable"
   },
-  "boto3_paginator_response_items_key": "Items"
+  "boto3_paginator_response_items_key": "Items" // Aggregate paginated responses' items from the "Items" key
 }
 ```
 

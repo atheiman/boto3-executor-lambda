@@ -2,7 +2,7 @@ Deploy as an AWS Lambda function to make AWS API calls using Boto3 for you and s
 
 This Lambda function can be useful from other tools that can not run AWS API calls or can only handle responses up to a certain size. For example, [Step Functions AWS SDK service integrations](https://docs.aws.amazon.com/step-functions/latest/dg/supported-services-awssdk.html) can only handle responses up to 256 KB.
 
-## Invoking Payload Event Format
+## Invoking Event Payload Format
 
 When invoking the Lambda function, the below keys can be provided in the event payload:
 
